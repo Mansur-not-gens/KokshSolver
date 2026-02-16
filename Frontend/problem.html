@@ -6,23 +6,57 @@
     <title>Лента проблем — KokshSolver</title>
     <link rel="stylesheet" href="problem.css">
     <style>
-        /* Модалка */
-        #postModal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            overflow: auto; background: rgba(0,0,0,0.5);
-        }
-        #postModal .modal-content {
-            background: #fff; margin: 10% auto; padding: 20px;
-            border-radius: 10px; width: 90%; max-width: 500px; position: relative;
-        }
-        .close {
-            position: absolute; right: 15px; top: 10px;
-            font-size: 24px; cursor: pointer;
-        }
-        #message { margin-top: 10px; color: green; }
+        /* --- Мобильная адаптация --- */
+        body { font-family: sans-serif; margin: 0; background: #f9f9f9; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
+        .flex-sb { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+
+        .header { background: #fff; padding: 15px 0; border-bottom: 1px solid #ddd; }
+        .logo { font-size: 24px; font-weight: bold; color: #2e7d32; }
+        .nav a { margin-right: 15px; text-decoration: none; color: #333; }
+        .nav a.active { color: #2e7d32; border-bottom: 2px solid #2e7d32; }
+        .btn-green { background: #4caf50; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 5px; }
+
+        .page-title { margin: 20px 0; font-size: 22px; }
+
+        .filter-panel { display: flex; flex-direction: column; gap: 10px; background: #fff; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .filter-group { display: flex; flex-wrap: wrap; gap: 5px; }
+        .filter-btn { background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 14px; }
+        .filter-btn.active { background: #2e7d32; color: #fff; }
+        .search-box input { padding: 6px; border: 1px solid #ddd; border-radius: 5px; width: 100%; max-width: 250px; }
+
+        .problems-feed { display: flex; flex-direction: column; gap: 15px; }
+
+        .problem-item { display: flex; flex-direction: column; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .feed-img { width: 100%; height: auto; object-fit: cover; }
+        .feed-content { padding: 15px; flex: 1; position: relative; }
+        .feed-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; }
+
+        .badge { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge.red { background: #ffebee; color: #c62828; }
+        .badge.yellow { background: #fff8e1; color: #f9a825; }
+        .badge.green { background: #e8f5e9; color: #2e7d32; }
+
+        .comments-block { background: #fdfdfd; border-top: 1px solid #f0f0f0; padding: 10px 0; margin-top: 10px; }
+        .comment { font-size: 12px; margin-bottom: 5px; color: #555; }
+        .comment strong { color: #222; margin-right: 5px; }
+        .comment-form { display: flex; gap: 5px; margin-top: 5px; }
+        .comment-form input { flex: 1; padding: 5px; border: 1px solid #eee; border-radius: 5px; font-size: 12px; }
+        .comment-form button { background: #eee; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+
+        .feed-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12px; }
+        .btn-vote { background: #2e7d32; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .status-done { color: #2e7d32; font-weight: bold; }
+
+        .footer { text-align: center; padding: 20px; color: #888; font-size: 12px; }
+
+        /* --- Модальное окно --- */
+        #postModal { display: none; position: fixed; z-index: 1000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background: #fff; margin: 50px auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; position: relative; }
+        .close { position: absolute; top:10px; right:15px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        #newPostForm input, #newPostForm textarea { width: 100%; margin-bottom: 10px; padding: 8px; border-radius: 5px; border:1px solid #ddd; }
+        #newPostForm button { background: #2e7d32; color: #fff; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; width: 100%; }
+        #message { margin-top: 5px; font-size: 12px; color: #2e7d32; }
     </style>
 </head>
 <body>
@@ -56,7 +90,7 @@
     </div>
 
     <div class="problems-feed">
-        <!-- Посты будут подгружаться сюда -->
+        <!-- Посты подгружаются JS -->
     </div>
 </main>
 
@@ -65,31 +99,33 @@
 </footer>
 
 <!-- Модальное окно -->
-<div id="postModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Создать новый пост</h2>
-    <form id="newPostForm">
-      <input type="text" name="title" placeholder="Заголовок" required>
-      <textarea name="content" placeholder="Описание проблемы" required></textarea>
-      <!-- Картинка необязательна -->
-      <input type="text" name="image_url" placeholder="Ссылка на картинку (необязательно)">
-      <button type="submit">Создать</button>
-    </form>
-    <p id="message"></p>
-  </div>
+<div id="postModal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Создать новую проблему</h3>
+        <form id="newPostForm">
+            <input type="text" name="title" placeholder="Заголовок" required>
+            <textarea name="content" placeholder="Описание проблемы" rows="4" required></textarea>
+            <input type="text" name="image_url" placeholder="URL картинки (не обязательно)">
+            <button type="submit">Создать</button>
+        </form>
+        <div id="message"></div>
+    </div>
 </div>
 
 <script>
 const feedContainer = document.querySelector('.problems-feed');
 
-// -------------------------
-// Функция для отображения одного поста
-// -------------------------
-function renderPost(post) {
-    fetch(`/api/posts/${post.id}/comments`)
-      .then(res => res.json())
-      .then(comments => {
+// Получаем все посты
+fetch("/api/posts")
+  .then(res => res.json())
+  .then(posts => {
+    feedContainer.innerHTML = '';
+
+    posts.forEach(post => {
+      fetch(`/api/posts/${post.id}/comments`)
+        .then(res => res.json())
+        .then(comments => {
           const commentsHTML = comments.map(c =>
             `<div class="comment"><strong>${c.author || 'Пользователь'}:</strong> ${c.text}</div>`
           ).join('');
@@ -98,10 +134,11 @@ function renderPost(post) {
                              post.status === 'in_progress' ? 'yellow' : 'green';
           const statusText = post.status === 'important' ? 'Важное' :
                              post.status === 'in_progress' ? 'В работе' : 'Решено';
+          const imgHTML = post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="feed-img">` : '';
 
           const postHTML = `
             <div class="problem-item ${post.status === 'solved' ? 'solved' : ''}">
-              <img src="${post.image_url}" alt="${post.title}" class="feed-img">
+              ${imgHTML}
               <div class="feed-content">
                 <div class="feed-header">
                   <span class="badge ${badgeColor}">${statusText}</span>
@@ -109,6 +146,132 @@ function renderPost(post) {
                 </div>
                 <h3>${post.title}</h3>
                 <p>${post.content}</p>
+
+                <div class="comments-block">
+                  ${commentsHTML}
+                  <form class="comment-form">
+                    <input type="text" placeholder="Ваш комментарий...">
+                    <button type="submit">Отправить</button>
+                  </form>
+                </div>
+
+                <div class="feed-footer">
+                  <span class="votes-count"><b>${post.votes}</b> голосов</span>
+                  <button class="btn-vote">Голосовать</button>
+                </div>
+              </div>
+            </div>
+          `;
+
+          feedContainer.insertAdjacentHTML('beforeend', postHTML);
+
+          const currentPost = feedContainer.lastElementChild;
+
+          currentPost.querySelector('.btn-vote').addEventListener('click', () => {
+            fetch(`/api/posts/${post.id}/vote`, { method: 'POST' })
+              .then(res => res.json())
+              .then(updated => {
+                currentPost.querySelector('.votes-count b').textContent = updated.votes;
+              });
+          });
+
+          const formComment = currentPost.querySelector('.comment-form');
+          formComment.addEventListener('submit', e => {
+            e.preventDefault();
+            const input = formComment.querySelector('input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            fetch(`/api/posts/${post.id}/comments`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text })
+            })
+            .then(res => res.json())
+            .then(newComment => {
+              const commentsBlock = currentPost.querySelector('.comments-block');
+              const div = document.createElement('div');
+              div.className = 'comment';
+              div.innerHTML = `<strong>${newComment.author || 'Пользователь'}:</strong> ${newComment.text}`;
+              commentsBlock.insertBefore(div, formComment);
+              input.value = '';
+            });
+          });
+        });
+    });
+  })
+  .catch(err => console.error('Ошибка загрузки постов:', err));
+
+// --- Модальное окно ---
+const modal = document.getElementById("postModal");
+const openBtn = document.getElementById("openModal");
+const closeBtn = modal.querySelector(".close");
+const form = document.getElementById("newPostForm");
+const message = document.getElementById("message");
+
+openBtn.onclick = () => modal.style.display = "block";
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = e => { if(e.target == modal) modal.style.display = "none"; }
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+  if(!data.image_url) delete data.image_url;
+
+  fetch("/api/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(post => {
+    message.textContent = "Проблема успешно создана!";
+    form.reset();
+    setTimeout(() => modal.style.display = "none", 1000);
+    addPostToFeed(post);
+  })
+  .catch(err => {
+    message.textContent = "Ошибка при создании проблемы.";
+    console.error(err);
+  });
+});
+
+function addPostToFeed(post) {
+  const badgeColor = post.status === 'important' ? 'red' :
+                     post.status === 'in_progress' ? 'yellow' : 'green';
+  const statusText = post.status === 'important' ? 'Важное' :
+                     post.status === 'in_progress' ? 'В работе' : 'Решено';
+  const imgHTML = post.image_url ? `<img src="${post.image_url}" alt="${post.title}" class="feed-img">` : '';
+
+  const postHTML = `
+    <div class="problem-item ${post.status === 'solved' ? 'solved' : ''}">
+      ${imgHTML}
+      <div class="feed-content">
+        <div class="feed-header">
+          <span class="badge ${badgeColor}">${statusText}</span>
+          <span class="date">${new Date(post.created_at).toLocaleDateString()}</span>
+        </div>
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+        <div class="comments-block">
+          <form class="comment-form">
+            <input type="text" placeholder="Ваш комментарий...">
+            <button type="submit">Отправить</button>
+          </form>
+        </div>
+        <div class="feed-footer">
+          <span class="votes-count"><b>${post.votes}</b> голосов</span>
+          <button class="btn-vote">Голосовать</button>
+        </div>
+      </div>
+    </div>
+  `;
+  feedContainer.insertAdjacentHTML('afterbegin', postHTML);
+}
+</script>
+
+</body>
+</html>                <p>${post.content}</p>
 
                 <div class="comments-block">
                   ${commentsHTML}
@@ -214,4 +377,5 @@ form.addEventListener("submit", e => {
 
 </body>
 </html>
+
 
