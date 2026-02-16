@@ -5,127 +5,211 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лента проблем — KokshSolver</title>
     <link rel="stylesheet" href="problem.css">
+    <style>
+        /* Модалка */
+        #postModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background: rgba(0,0,0,0.5);
+        }
+        #postModal .modal-content {
+            background: #fff; margin: 10% auto; padding: 20px;
+            border-radius: 10px; width: 90%; max-width: 500px; position: relative;
+        }
+        .close {
+            position: absolute; right: 15px; top: 10px;
+            font-size: 24px; cursor: pointer;
+        }
+        #message { margin-top: 10px; color: green; }
+    </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="container flex-sb">
-            <div class="logo">KokshSolver</div>
-            <nav class="nav">
-                <a href="index.html">Главная</a>
-                <a href="problems.html" class="active">Проблемы</a>
-                <a href="#">О проекте</a>
-                <a href="#">Контакты</a>
-            </nav>
-            <!-- Кнопка -->
-<button class="btn-green" id="openModal">Сообщить проблему</button>
+<header class="header">
+    <div class="container flex-sb">
+        <div class="logo">KokshSolver</div>
+        <nav class="nav">
+            <a href="index.html">Главная</a>
+            <a href="problem.html" class="active">Проблемы</a>
+            <a href="#">О проекте</a>
+            <a href="#">Контакты</a>
+        </nav>
+        <button class="btn-green" id="openModal">Сообщить проблему</button>
+    </div>
+</header>
 
-<!-- Модалка -->
-<div id="postModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Сообщить о проблеме</h2>
-    <form id="newPostForm">
-      <label>Заголовок</label><br>
-      <input type="text" name="title" required><br><br>
+<main class="container">
+    <h1 class="page-title">Лента городских проблем</h1>
 
-      <label>Описание</label><br>
-      <textarea name="content" rows="4" required></textarea><br><br>
+    <div class="filter-panel">
+        <div class="filter-group">
+            <span>Сортировать:</span>
+            <button class="filter-btn active">Важные</button>
+            <button class="filter-btn">Новые</button>
+            <button class="filter-btn">По голосам</button>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="Поиск по району или теме...">
+        </div>
+    </div>
 
-      <label>Ссылка на изображение</label><br>
-      <input type="text" name="image_url"><br><br>
+    <div class="problems-feed">
+        <!-- Посты будут подгружаться сюда -->
+    </div>
+</main>
 
-      <button type="submit" class="btn-green">Отправить</button>
-    </form>
-    <p id="message"></p>
-  </div>
+<footer class="footer">
+    <p>© 2026 KokshSolver. Кокшетау — чистый город.</p>
+</footer>
+
+<!-- МОДАЛКА ДЛЯ НОВОГО ПОСТА -->
+<div id="postModal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Сообщить о проблеме</h2>
+        <form id="newPostForm">
+            <input type="text" name="title" placeholder="Заголовок" required><br><br>
+            <textarea name="content" placeholder="Описание проблемы" required></textarea><br><br>
+            <input type="text" name="image_url" placeholder="Ссылка на изображение"><br><br>
+            <button type="submit">Отправить</button>
+        </form>
+        <div id="message"></div>
+    </div>
 </div>
-        </div>
-    </header>
 
-    <main class="container">
-        <h1 class="page-title">Лента городских проблем</h1>
+<script>
+const feedContainer = document.querySelector('.problems-feed');
 
-        <div class="filter-panel">
-            <div class="filter-group">
-                <span>Сортировать:</span>
-                <button class="filter-btn active">Важные</button>
-                <button class="filter-btn">Новые</button>
-                <button class="filter-btn">По голосам</button>
-            </div>
-            <div class="search-box">
-                <input type="text" placeholder="Поиск по району или теме...">
-            </div>
-        </div>
+// -------------------------
+// Функция для отображения одного поста
+// -------------------------
+function renderPost(post) {
+    fetch(`/api/posts/${post.id}/comments`)
+      .then(res => res.json())
+      .then(comments => {
+          const commentsHTML = comments.map(c =>
+            `<div class="comment"><strong>${c.author || 'Пользователь'}:</strong> ${c.text}</div>`
+          ).join('');
 
-        <div class="problems-feed">
+          const badgeColor = post.status === 'important' ? 'red' :
+                             post.status === 'in_progress' ? 'yellow' : 'green';
+          const statusText = post.status === 'important' ? 'Важное' :
+                             post.status === 'in_progress' ? 'В работе' : 'Решено';
 
-            <div class="problem-item">
-                <img src="problem1.jpg" alt="Светофор" class="feed-img">
-                <div class="feed-content">
-                    <div class="feed-header">
-                        <span class="badge red">Важное</span>
-                        <span class="date">15 февраля 2026</span>
-                    </div>
-                    <h3>Нет светофора на перекрестке Абая-Кенесары</h3>
-                    <p>Очень опасный участок дороги рядом со школой. Водители редко пропускают детей.</p>
-                    
-                    <div class="comments-block">
-                        <div class="comment"><strong>Азамат:</strong> Поддерживаю, вчера там была авария.</div>
-                        <div class="comment"><strong>Елена:</strong> Нужно писать коллективное обращение.</div>
-                        <form class="comment-form">
-                            <input type="text" placeholder="Ваш комментарий...">
-                            <button type="submit">Отправить</button>
-                        </form>
-                    </div>
-
-                    <div class="feed-footer">
-                        <span class="votes-count"><b>318</b> голосов</span>
-                        <button class="btn-vote">Голосовать</button>
-                    </div>
+          const postHTML = `
+            <div class="problem-item ${post.status === 'solved' ? 'solved' : ''}">
+              <img src="${post.image_url}" alt="${post.title}" class="feed-img">
+              <div class="feed-content">
+                <div class="feed-header">
+                  <span class="badge ${badgeColor}">${statusText}</span>
+                  <span class="date">${new Date(post.created_at).toLocaleDateString()}</span>
                 </div>
-            </div>
+                <h3>${post.title}</h3>
+                <p>${post.content}</p>
 
-            <div class="problem-item">
-                
-                    </div>
-
-                    <div class="feed-footer">
-                        <span class="votes-count"><b>245</b> голосов</span>
-                        <button class="btn-vote">Голосовать</button>
-                    </div>
+                <div class="comments-block">
+                  ${commentsHTML}
+                  <form class="comment-form">
+                    <input type="text" placeholder="Ваш комментарий...">
+                    <button type="submit">Отправить</button>
+                  </form>
                 </div>
-            </div>
 
-            <div class="problem-item solved">
-                <img src="problem3.jpg" alt="Мусор" class="feed-img">
-                <div class="feed-content">
-                    <div class="feed-header">
-                        <span class="badge green">Решено</span>
-                        <span class="date">10 февраля 2026</span>
-                    </div>
-                    <h3>Свалка мусора в мкр. Боровской</h3>
-                    <p>Мусор вывезли, территорию за домом №12 очистили. Спасибо за помощь!</p>
-                    
-                    <div class="comments-block">
-                        <div class="comment"><strong>Житель:</strong> Оперативно отреагировали, молодцы!</div>
-                    </div>
-
-                    <div class="feed-footer">
-                        <span class="status-done">Проблема решена</span>
-                        <button class="btn-details">Архив</button>
-                    </div>
+                <div class="feed-footer">
+                  <span class="votes-count"><b>${post.votes}</b> голосов</span>
+                  <button class="btn-vote">Голосовать</button>
                 </div>
+              </div>
             </div>
+          `;
 
-        </div> </main>
+          feedContainer.insertAdjacentHTML('afterbegin', postHTML);
+          const currentPost = feedContainer.firstElementChild;
 
-    <footer class="footer">
-        <p>© 2026 KokshSolver. Кокшетау — чистый город.</p>
-    </footer>
-<script src="problem.js"></script>
+          // Голосование
+          currentPost.querySelector('.btn-vote').addEventListener('click', () => {
+              fetch(`/api/posts/${post.id}/vote`, { method: 'POST' })
+                .then(res => res.json())
+                .then(updated => {
+                  currentPost.querySelector('.votes-count b').textContent = updated.votes;
+                });
+          });
+
+          // Комментарий
+          const form = currentPost.querySelector('.comment-form');
+          form.addEventListener('submit', e => {
+              e.preventDefault();
+              const input = form.querySelector('input');
+              const text = input.value.trim();
+              if(!text) return;
+
+              fetch(`/api/posts/${post.id}/comments`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ text })
+              })
+              .then(res => res.json())
+              .then(newComment => {
+                  const commentsBlock = currentPost.querySelector('.comments-block');
+                  const div = document.createElement('div');
+                  div.className = 'comment';
+                  div.innerHTML = `<strong>${newComment.author || 'Пользователь'}:</strong> ${newComment.text}`;
+                  commentsBlock.insertBefore(div, form);
+                  input.value = '';
+              });
+          });
+      });
+}
+
+// -------------------------
+// Получаем все посты при загрузке страницы
+// -------------------------
+fetch("/api/posts")
+  .then(res => res.json())
+  .then(posts => {
+      posts.forEach(post => renderPost(post));
+  })
+  .catch(err => console.error('Ошибка загрузки постов:', err));
+
+// -------------------------
+// Модалка для нового поста
+// -------------------------
+const modal = document.getElementById("postModal");
+const openBtn = document.getElementById("openModal");
+const closeBtn = document.querySelector(".close");
+const form = document.getElementById("newPostForm");
+const message = document.getElementById("message");
+
+// Открыть/закрыть
+openBtn.onclick = () => modal.style.display = "block";
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = e => { if(e.target == modal) modal.style.display = "none"; }
+
+// Отправка нового поста
+form.addEventListener("submit", e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(post => {
+        message.textContent = "Проблема успешно создана!";
+        renderPost(post); // добавляем пост в ленту
+        form.reset();
+        setTimeout(() => modal.style.display = "none", 1000);
+    })
+    .catch(err => {
+        message.textContent = "Ошибка при создании проблемы.";
+        console.error(err);
+    });
+});
+</script>
+
 </body>
-
 </html>
-
-
