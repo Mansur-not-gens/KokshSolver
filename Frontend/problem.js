@@ -88,3 +88,39 @@ fetch("/api/posts")
     });
   })
   .catch(err => console.error('Ошибка загрузки постов:', err));
+<script>
+const modal = document.getElementById("postModal");
+const openBtn = document.getElementById("openModal");
+const closeBtn = document.querySelector(".close");
+const form = document.getElementById("newPostForm");
+const message = document.getElementById("message");
+
+// Открыть модалку
+openBtn.onclick = () => modal.style.display = "block";
+
+// Закрыть модалку
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = e => { if(e.target == modal) modal.style.display = "none"; }
+
+// Отправка формы
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  fetch("/api/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(post => {
+    message.textContent = "Проблема успешно создана!";
+    form.reset();
+    setTimeout(() => modal.style.display = "none", 1000);
+  })
+  .catch(err => {
+    message.textContent = "Ошибка при создании проблемы.";
+    console.error(err);
+  });
+});
+</script>
