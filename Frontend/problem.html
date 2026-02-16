@@ -17,7 +17,29 @@
                 <a href="#">О проекте</a>
                 <a href="#">Контакты</a>
             </nav>
-            <button class="btn-green">Сообщить проблему</button>
+            <!-- Кнопка -->
+<button class="btn-green" id="openModal">Сообщить проблему</button>
+
+<!-- Модалка -->
+<div id="postModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Сообщить о проблеме</h2>
+    <form id="newPostForm">
+      <label>Заголовок</label><br>
+      <input type="text" name="title" required><br><br>
+
+      <label>Описание</label><br>
+      <textarea name="content" rows="4" required></textarea><br><br>
+
+      <label>Ссылка на изображение</label><br>
+      <input type="text" name="image_url"><br><br>
+
+      <button type="submit" class="btn-green">Отправить</button>
+    </form>
+    <p id="message"></p>
+  </div>
+</div>
         </div>
     </header>
 
@@ -105,4 +127,5 @@
 </body>
 
 </html>
+
 
