@@ -25,10 +25,26 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
 
 
 # ------------------- GET ALL POSTS -------------------
+from fastapi import Query
+
 @router.get("/", response_model=List[schemas.PostResponse])
-def get_posts(db: Session = Depends(get_db)):
-    posts = db.query(models.Post).order_by(models.Post.created_at.desc()).all()
+def get_posts(
+    sort: str = Query("new", enum=["new", "top", "important"]),
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.Post)
+
+    if sort == "top":
+        query = query.order_by(models.Post.votes.desc())
+    elif sort == "important":
+        query = query.filter(models.Post.is_important == True)\
+                     .order_by(models.Post.created_at.desc())
+    else:  # new
+        query = query.order_by(models.Post.created_at.desc())
+
+    posts = query.all()
     return posts
+
 
 
 # ------------------- GET POST BY ID -------------------
