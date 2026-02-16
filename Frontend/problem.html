@@ -64,19 +64,20 @@
     <p>© 2026 KokshSolver. Кокшетау — чистый город.</p>
 </footer>
 
-<!-- МОДАЛКА ДЛЯ НОВОГО ПОСТА -->
-<div id="postModal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Сообщить о проблеме</h2>
-        <form id="newPostForm">
-            <input type="text" name="title" placeholder="Заголовок" required><br><br>
-            <textarea name="content" placeholder="Описание проблемы" required></textarea><br><br>
-            <input type="text" name="image_url" placeholder="Ссылка на изображение"><br><br>
-            <button type="submit">Отправить</button>
-        </form>
-        <div id="message"></div>
-    </div>
+<!-- Модальное окно -->
+<div id="postModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Создать новый пост</h2>
+    <form id="newPostForm">
+      <input type="text" name="title" placeholder="Заголовок" required>
+      <textarea name="content" placeholder="Описание проблемы" required></textarea>
+      <!-- Картинка необязательна -->
+      <input type="text" name="image_url" placeholder="Ссылка на картинку (необязательно)">
+      <button type="submit">Создать</button>
+    </form>
+    <p id="message"></p>
+  </div>
 </div>
 
 <script>
@@ -213,3 +214,4 @@ form.addEventListener("submit", e => {
 
 </body>
 </html>
+
