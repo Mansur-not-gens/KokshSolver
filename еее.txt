@@ -74,3 +74,19 @@ fetch("/api/posts", {
 fetch("/api/posts/1/vote", { method: "POST" })
   .then(res => res.json())
   .then(data => console.log(data));
+
+
+
+// добавить комментарий
+fetch("/api/posts/1/comments", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: "Отличный пост!" })
+})
+.then(res => res.json())
+.then(data => console.log(data));
+
+// получить комментарии
+fetch("/api/posts/1/comments")
+  .then(res => res.json())
+  .then(data => console.log(data));
