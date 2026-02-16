@@ -1,0 +1,61 @@
+ FastAPI + PostgreSQL + Render🗄 Какие таблицы нужны
+1️⃣ posts
+поле	тип	зачем
+id	int	ID поста
+title	string	заголовок
+content	text	основной текст
+image_url	string	ссылка на картинку
+votes	int	количество голосов
+is_important	bool	важный ли пост
+created_at	datetime	сортировка
+2️⃣ comments
+поле	тип	зачем
+id	int	ID комментария
+post_id	int (FK)	к какому посту
+text	text	текст комментария
+created_at	datetime	сортировка
+📡 Какие endpoint’ы нужны
+Посты
+POST   /api/posts
+GET    /api/posts
+GET    /api/posts/{id}
+POST   /api/posts/{id}/vote
+Комментарии
+POST   /api/posts/{id}/comments
+GET    /api/posts/{id}/comments
+ВСЁ. Этого достаточно.
+
+🗳 Как реализовать голосование
+Логика простая:
+
+post.votes += 1
+
+if post.votes >= N:
+    post.is_important = True
+Где N — например 10.
+
+🖼 Что делать с картинками?
+Самый простой способ для хакатона:
+
+👉 Не хранить файл в БД
+👉 Хранить только image_url
+
+Варианты:
+
+загружать картинку на Cloudinary
+
+или временно хранить в static/
+
+или вообще вставлять ссылку
+
+На хакатоне лучше просто сохранять URL.
+
+📁 Минимальная структура
+app/
+ ├── main.py
+ ├── database.py
+ ├── models.py
+ ├── schemas.py
+ └── routers/
+      ├── posts.py
+      └── comments.py
