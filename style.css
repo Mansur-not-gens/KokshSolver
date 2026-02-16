@@ -48,7 +48,7 @@ body {
 
 /* БАННЕР */
 .hero {
-    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('img/кокш.jpg (1).jpeg');
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('Frontend/koksh.jpeg');
     background-size: cover;
     background-position: center;
     color: white;
@@ -296,5 +296,6 @@ body {
 .logo-white { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
 
 .footer-links a { color: white; text-decoration: none; margin: 0 10px; }
+
 
 
