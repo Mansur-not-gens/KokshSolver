@@ -59,3 +59,18 @@ app/
  └── routers/
       ├── posts.py
       └── comments.py
+
+
+// создать пост
+fetch("/api/posts", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ title: "Заголовок", content: "Текст", image_url: "https://..." })
+})
+.then(res => res.json())
+.then(data => console.log(data));
+
+// проголосовать
+fetch("/api/posts/1/vote", { method: "POST" })
+  .then(res => res.json())
+  .then(data => console.log(data));
