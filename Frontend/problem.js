@@ -1,16 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лента проблем — KokshSolver</title>
+    <link rel="stylesheet" href="problem.css">
+    <style>
+        /* Модалка */
+        #postModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background: rgba(0,0,0,0.5);
+        }
+        #postModal .modal-content {
+            background: #fff; margin: 10% auto; padding: 20px;
+            border-radius: 10px; width: 90%; max-width: 500px; position: relative;
+        }
+        .close {
+            position: absolute; right: 15px; top: 10px;
+            font-size: 24px; cursor: pointer;
+        }
+        #message { margin-top: 10px; color: green; }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container flex-sb">
+        <div class="logo">KokshSolver</div>
+        <nav class="nav">
+            <a href="index.html">Главная</a>
+            <a href="problem.html" class="active">Проблемы</a>
+            <a href="#">О проекте</a>
+            <a href="#">Контакты</a>
+        </nav>
+        <button class="btn-green" id="openModal">Сообщить проблему</button>
+    </div>
+</header>
+
+<main class="container">
+    <h1 class="page-title">Лента городских проблем</h1>
+
+    <div class="filter-panel">
+        <div class="filter-group">
+            <span>Сортировать:</span>
+            <button class="filter-btn active">Важные</button>
+            <button class="filter-btn">Новые</button>
+            <button class="filter-btn">По голосам</button>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="Поиск по району или теме...">
+        </div>
+    </div>
+
+    <div class="problems-feed">
+        <!-- Посты будут подгружаться сюда -->
+    </div>
+</main>
+
+<footer class="footer">
+    <p>© 2026 KokshSolver. Кокшетау — чистый город.</p>
+</footer>
+
+<!-- МОДАЛКА ДЛЯ НОВОГО ПОСТА -->
+<div id="postModal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Сообщить о проблеме</h2>
+        <form id="newPostForm">
+            <input type="text" name="title" placeholder="Заголовок" required><br><br>
+            <textarea name="content" placeholder="Описание проблемы" required></textarea><br><br>
+            <input type="text" name="image_url" placeholder="Ссылка на изображение"><br><br>
+            <button type="submit">Отправить</button>
+        </form>
+        <div id="message"></div>
+    </div>
+</div>
+
+<script>
 const feedContainer = document.querySelector('.problems-feed');
 
-// Получаем все посты
-fetch("/api/posts")
-  .then(res => res.json())
-  .then(posts => {
-    feedContainer.innerHTML = '';
-
-    posts.forEach(post => {
-      // Получаем комментарии для каждого поста
-      fetch(`/api/posts/${post.id}/comments`)
-        .then(res => res.json())
-        .then(comments => {
+// -------------------------
+// Функция для отображения одного поста
+// -------------------------
+function renderPost(post) {
+    fetch(`/api/posts/${post.id}/comments`)
+      .then(res => res.json())
+      .then(comments => {
           const commentsHTML = comments.map(c =>
             `<div class="comment"><strong>${c.author || 'Пользователь'}:</strong> ${c.text}</div>`
           ).join('');
@@ -47,59 +125,94 @@ fetch("/api/posts")
             </div>
           `;
 
-          feedContainer.insertAdjacentHTML('beforeend', postHTML);
+          feedContainer.insertAdjacentHTML('afterbegin', postHTML);
+          const currentPost = feedContainer.firstElementChild;
 
-          // Назначаем обработчики после вставки
-          const currentPost = feedContainer.lastElementChild;
-
-          // Голосовать
+          // Голосование
           currentPost.querySelector('.btn-vote').addEventListener('click', () => {
-            fetch(`/api/posts/${post.id}/vote`, { method: 'POST' })
-              .then(res => res.json())
-              .then(updated => {
-                currentPost.querySelector('.votes-count b').textContent = updated.votes;
-              });
+              fetch(`/api/posts/${post.id}/vote`, { method: 'POST' })
+                .then(res => res.json())
+                .then(updated => {
+                  currentPost.querySelector('.votes-count b').textContent = updated.votes;
+                });
           });
 
           // Комментарий
           const form = currentPost.querySelector('.comment-form');
           form.addEventListener('submit', e => {
-            e.preventDefault();
-            const input = form.querySelector('input');
-            const text = input.value.trim();
-            if(!text) return;
-            
-            fetch(`/api/posts/${post.id}/comments`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text })
-            })
-            .then(res => res.json())
-            .then(newComment => {
-              const commentsBlock = currentPost.querySelector('.comments-block');
-              const div = document.createElement('div');
-              div.className = 'comment';
-              div.innerHTML = `<strong>${newComment.author || 'Пользователь'}:</strong> ${newComment.text}`;
-              commentsBlock.insertBefore(div, form);
-              input.value = '';
-            });
+              e.preventDefault();
+              const input = form.querySelector('input');
+              const text = input.value.trim();
+              if(!text) return;
+
+              fetch(`/api/posts/${post.id}/comments`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ text })
+              })
+              .then(res => res.json())
+              .then(newComment => {
+                  const commentsBlock = currentPost.querySelector('.comments-block');
+                  const div = document.createElement('div');
+                  div.className = 'comment';
+                  div.innerHTML = `<strong>${newComment.author || 'Пользователь'}:</strong> ${newComment.text}`;
+                  commentsBlock.insertBefore(div, form);
+                  input.value = '';
+              });
           });
-        });
-    });
+      });
+}
+
+// -------------------------
+// Получаем все посты при загрузке страницы
+// -------------------------
+fetch("/api/posts")
+  .then(res => res.json())
+  .then(posts => {
+      posts.forEach(post => renderPost(post));
   })
   .catch(err => console.error('Ошибка загрузки постов:', err));
-<script>
+
+// -------------------------
+// Модалка для нового поста
+// -------------------------
 const modal = document.getElementById("postModal");
 const openBtn = document.getElementById("openModal");
 const closeBtn = document.querySelector(".close");
 const form = document.getElementById("newPostForm");
 const message = document.getElementById("message");
 
-// Открыть модалку
+// Открыть/закрыть
 openBtn.onclick = () => modal.style.display = "block";
-
-// Закрыть модалку
 closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = e => { if(e.target == modal) modal.style.display = "none"; }
+
+// Отправка нового поста
+form.addEventListener("submit", e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(post => {
+        message.textContent = "Проблема успешно создана!";
+        renderPost(post); // добавляем пост в ленту
+        form.reset();
+        setTimeout(() => modal.style.display = "none", 1000);
+    })
+    .catch(err => {
+        message.textContent = "Ошибка при создании проблемы.";
+        console.error(err);
+    });
+});
+</script>
+
+</body>
+</html>closeBtn.onclick = () => modal.style.display = "none";
 window.onclick = e => { if(e.target == modal) modal.style.display = "none"; }
 
 // Отправка формы
