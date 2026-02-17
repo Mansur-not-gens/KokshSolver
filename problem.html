@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KokshSolver — Решаем проблемы города</title>
+    <link rel="stylesheet" href="problem.css">
+</head>
+<body>
+
+    <header class="ks-header">
+        <div class="ks-container ks-flex-sb">
+            <div class="ks-logo" onclick="goHome()" style="cursor:pointer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);"><path d="M3 21h18"></path><path d="M9 8h10"></path><path d="M9 12h10"></path><path d="M9 16h10"></path><path d="M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17"></path></svg>
+                <span>KokshSolver</span>
+            </div>
+            <nav class="ks-nav">
+                <a href="#" id="nav-home" onclick="goHome(); return false;">Главная</a>
+                <a href="#ks-feed" id="nav-issues" class="active">Проблемы</a>
+                <a href="#">Карта</a>
+                <a href="#">О проекте</a>
+            </nav>
+            <button class="ks-btn-primary" onclick="ksModal.open()">Сообщить проблему</button>
+        </div>
+    </header>
+
+    <main class="ks-container ks-grid">
+        <aside class="ks-sidebar">
+            <div class="ks-filter-group">
+                <h4>Район</h4>
+                <label><input type="checkbox" checked> Центр <span>124</span></label>
+                <label><input type="checkbox"> Северо-Восток <span>87</span></label>
+                <label><input type="checkbox"> Юго-Запад <span>63</span></label>
+                
+                <h4 style="margin-top:25px">Категория</h4>
+                <label><input type="checkbox" checked> Дороги <span>202</span></label>
+                <label><input type="checkbox" checked> Освещение <span>78</span></label>
+                <label><input type="checkbox"> Мусор <span>59</span></label>
+            </div>
+            <button class="ks-btn-secondary full-width" style="margin-top:20px" onclick="location.reload()">Сбросить фильтры</button>
+        </aside>
+
+        <section class="ks-feed" id="ks-feed">
+            <div class="ks-toolbar ks-flex-sb">
+                <div class="ks-tabs">
+                    <button class="ks-tab-btn active" onclick="ksSort('imp', this)">Важные</button>
+                    <button class="ks-tab-btn" onclick="ksSort('votes', this)">По голосам</button>
+                </div>
+                <input type="text" class="ks-search-input" placeholder="Поиск проблемы..." onkeyup="ksSearch(this.value)">
+            </div>
+
+            <div id="ks-list">
+                <article class="ks-card" data-votes="326">
+                    <div class="ks-card-body">
+                        <div class="ks-card-content">
+                            <div class="ks-meta">Дороги • Центр • 2 ч. назад</div>
+                            <h3>Нет светофора на перекрестке</h3>
+                            <span class="ks-tag tag-red">Важное</span>
+                            <p>На пересечении Абая-Кенесары опасно переходить дорогу. Водители часто не пропускают пешеходов.</p>
+                        </div>
+                        <div class="ks-card-img" style="background-image: url('https://images.unsplash.com/photo-1594910322019-3806f97c001c?w=400');"></div>
+                    </div>
+                    <div class="ks-card-footer">
+                        <button class="ks-btn-vote" onclick="ksVote(this)">Голосовать (<b>326</b>)</button>
+                        <button class="ks-btn-secondary" onclick="ksToggleComments('box-1')">Комментарии (12)</button>
+                    </div>
+                    <div id="box-1" class="ks-comment-section">
+                        <div class="ks-comment-list">
+                            <div class="ks-comment-item"><b>Иван:</b> Полностью согласен, там нужен светофор.</div>
+                        </div>
+                        <div class="ks-comment-form">
+                            <input type="text" placeholder="Ваш ответ...">
+                            <button onclick="ksAddComment('box-1', this)">Отправить</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <div id="ks-modal" class="ks-modal-overlay">
+        <div class="ks-modal-content">
+            <button class="ks-modal-close" onclick="ksModal.close()">&times;</button>
+            <h2 style="margin-top:0">Новая проблема</h2>
+            <div class="ks-form-group">
+                <input type="text" id="m-title" placeholder="Что случилось? (Заголовок)">
+                <textarea id="m-desc" placeholder="Опишите ситуацию подробнее..."></textarea>
+                <button class="ks-btn-primary full-width" onclick="ksCreateIssue()">Опубликовать на портале</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="poblem.js"></script>
+</body>
+</html>

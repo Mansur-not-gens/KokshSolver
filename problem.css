@@ -1,0 +1,92 @@
+:root {
+    --primary: #2e7d32;
+    --primary-hover: #388e3c;
+    --bg: #f4f7f9;
+    --white: #ffffff;
+    --text: #333333;
+    --muted: #888888;
+    --border: #e2e8f0;
+    --shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; }
+body { 
+    font-family: 'Inter', -apple-system, system-ui, sans-serif; 
+    background-color: var(--bg); 
+    color: var(--text); 
+    margin: 0; 
+    scroll-behavior: smooth;
+}
+
+.ks-container { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+.ks-flex-sb { display: flex; justify-content: space-between; align-items: center; }
+
+/* Header & Nav */
+.ks-header { 
+    background: var(--white); 
+    padding: 1rem 0; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: sticky; top: 0; z-index: 1000;
+}
+.ks-logo { font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+.ks-nav { display: flex; gap: 20px; }
+.ks-nav a { 
+    text-decoration: none; color: #64748b; font-size: 14px; font-weight: 500; 
+    padding: 5px 0; border-bottom: 2px solid transparent; transition: 0.2s;
+}
+.ks-nav a.active, .ks-nav a:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Layout */
+.ks-grid { display: grid; grid-template-columns: 260px 1fr; gap: 30px; padding-top: 30px; }
+
+/* Sidebar */
+.ks-sidebar { background: var(--white); padding: 25px; border-radius: 12px; height: fit-content; box-shadow: var(--shadow); }
+.ks-sidebar h4 { margin: 0 0 15px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.ks-sidebar label { display: flex; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 12px; cursor: pointer; }
+.ks-sidebar input { accent-color: var(--primary); width: 16px; height: 16px; }
+.ks-sidebar span { margin-left: auto; color: var(--muted); font-size: 12px; }
+
+/* Feed & Cards */
+.ks-toolbar { margin-bottom: 20px; }
+.ks-tab-btn { background: var(--white); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; cursor: pointer; margin-right: 8px; font-size: 13px; }
+.ks-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.ks-search-input { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); outline: none; width: 200px; }
+
+.ks-card { background: var(--white); border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow); }
+.ks-card-body { display: flex; padding: 25px; gap: 25px; }
+.ks-card-content { flex: 1; }
+.ks-card-img { width: 180px; height: 130px; background-size: cover; background-position: center; border-radius: 8px; flex-shrink: 0; }
+.ks-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.ks-tag { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-block; margin-bottom: 12px; }
+.tag-red { background: #fee2e2; color: #b91c1c; }
+.tag-yellow { background: #fef3c7; color: #b45309; }
+
+/* Buttons */
+.ks-btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.ks-btn-secondary { background: #f1f5f9; border: 1px solid var(--border); padding: 8px 15px; border-radius: 6px; cursor: pointer; color: #475569; font-size: 13px; }
+.ks-btn-vote { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+.ks-btn-vote:disabled { background: #cbd5e1 !important; cursor: not-allowed; }
+
+/* Comments */
+.ks-card-footer { padding: 15px 25px; background: #f8fafc; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+.ks-comment-section { display: none; padding: 20px; border-top: 1px solid var(--border); }
+.ks-comment-item { font-size: 13px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dotted var(--border); }
+.ks-comment-form { display: flex; gap: 10px; margin-top: 15px; }
+.ks-comment-form input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; }
+.ks-comment-form button { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; }
+
+/* Modal */
+.ks-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.ks-modal-content { background: var(--white); padding: 35px; border-radius: 16px; width: 450px; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+.ks-modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; border: none; background: none; cursor: pointer; color: var(--muted); }
+.ks-form-group input, .ks-form-group textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; }
+.ks-form-group textarea { height: 120px; resize: none; }
+.full-width { width: 100%; }
+
+/* Mobile */
+@media (max-width: 850px) {
+    .ks-grid { grid-template-columns: 1fr; }
+    .ks-sidebar, .ks-nav { display: none; }
+    .ks-card-body { flex-direction: column-reverse; }
+    .ks-card-img { width: 100%; height: 180px; }
+}
